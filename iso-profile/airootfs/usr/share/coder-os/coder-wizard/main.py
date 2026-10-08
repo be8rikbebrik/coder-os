@@ -660,14 +660,22 @@ class CoderWizard(QMainWindow):
         except Exception as e:
             print(f"Manifest save warning: {e}")
 
-        # Check if running in Live ISO environment with Calamares
-        if os.path.exists("/usr/bin/calamares"):
+        # Check if running in Live ISO environment with installer
+        if os.path.exists("/usr/bin/coder-install"):
             QMessageBox.information(
                 self,
                 "CODER-OS",
-                f"Конфигурация сохранена в {manifest_path}!\nЗапуск графического установщика Calamares..."
+                f"Конфигурация сохранена в {manifest_path}!\nЗапуск установщика CODER-OS..."
             )
-            subprocess.Popen(["pkexec", "calamares"])
+            subprocess.Popen(["/usr/bin/coder-install"])
+            self.close()
+        elif os.path.exists("/usr/bin/archinstall"):
+            QMessageBox.information(
+                self,
+                "CODER-OS",
+                f"Конфигурация сохранена в {manifest_path}!\nЗапуск установщика системы..."
+            )
+            subprocess.Popen(["kitty", "-e", "sudo", "archinstall"])
             self.close()
         else:
             QMessageBox.information(

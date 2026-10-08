@@ -15,6 +15,8 @@ arch-install-scripts
 efibootmgr
 grub
 os-prober
+edk2-shell
+memtest86+-efi
 
 # Filesystems & Disk Utilities
 btrfs-progs
@@ -144,8 +146,8 @@ thunar-archive-plugin
 file-roller
 mousepad
 
-# Calamares Graphical Installer
-calamares
+# Official Arch Installer & System Helpers
+archinstall
 hwinfo
 upower
 ckbcomp

@@ -10,16 +10,26 @@ echo "   CODER-OS System Installer Initiator       "
 echo "============================================="
 
 if [ -f "$MANIFEST" ]; then
-    echo "[✓] Found configuration manifest: $MANIFEST"
+    echo "[✓] Найдена конфигурация: $MANIFEST"
 else
-    echo "[i] No manifest found. Launching wizard first..."
+    echo "[i] Конфигурация не найдена. Запуск мастера настройки..."
     coder-setup
 fi
 
-if command -v calamares &> /dev/null; then
-    echo "[✓] Launching Calamares GUI Installer..."
-    pkexec calamares "$@"
+if command -v archinstall &> /dev/null; then
+    echo "[✓] Запуск установщика archinstall в отдельном окне..."
+    kitty --title "CODER-OS Installer" bash -c "
+        echo '=====================================================';
+        echo '       CODER-OS • Установка базовой системы          ';
+        echo '=====================================================';
+        sudo archinstall;
+        echo '[*] Применяем ваши выбранные инструменты и профиль...';
+        sudo /usr/bin/coder-postinstall;
+        echo '=====================================================';
+        echo ' [✓] Установка CODER-OS завершена!';
+        echo '=====================================================';
+        read -p 'Нажмите Enter для перезагрузки системы...' && sudo reboot
+    "
 else
-    echo "[!] Calamares not installed in this environment."
-    echo "[i] You can run manual arch-install or coder-postinstall."
+    echo "[!] archinstall не найден."
 fi
