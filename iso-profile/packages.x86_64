@@ -73,7 +73,7 @@ xorg-xinit
 xorg-xrandr
 xorg-xsetroot
 wayland
-xwayland
+xorg-xwayland
 
 # Window Manager & Desktop Environment (Hyprland + Wayland Coder Rice)
 hyprland
@@ -100,7 +100,7 @@ noto-fonts
 noto-fonts-emoji
 noto-fonts-cjk
 papirus-icon-theme
-arc-gtk-theme
+arc-theme
 
 # Terminal & Shells
 kitty
