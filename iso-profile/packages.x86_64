@@ -59,7 +59,6 @@ alsa-utils
 
 # Display Drivers & Graphics
 mesa
-lib32-mesa
 vulkan-intel
 vulkan-radeon
 vulkan-icd-loader
@@ -100,7 +99,6 @@ noto-fonts
 noto-fonts-emoji
 noto-fonts-cjk
 papirus-icon-theme
-arc-theme
 
 # Terminal & Shells
 kitty
