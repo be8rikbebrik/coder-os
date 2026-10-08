@@ -1,0 +1,33 @@
+# Calamares branding descriptor for CODER-OS
+---
+componentName:  coderos
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 840px, 600px
+
+strings:
+    productName:         CODER-OS
+    shortProductName:    CODER-OS
+    version:             1.0 (Rolling)
+    shortVersion:        1.0
+    versionedName:       CODER-OS 1.0
+    shortVersionedName:  CODER-OS 1.0
+    bootloaderEntryName: CODER-OS
+    productUrl:          https://github.com/coder-os
+    supportUrl:          https://github.com/coder-os/issues
+    releaseNotesUrl:     https://github.com/coder-os/releases
+
+images:
+    productLogo:         "coder-logo.png"
+    productIcon:         "coder-logo.png"
+    productWelcome:      "welcome.png"
+
+style:
+   SidebarBackground:    "#0b0f19"
+   SidebarText:          "#e2e8f0"
+   SidebarTextCurrent:   "#38bdf8"
+   SidebarBackgroundCurrent: "#1e293b"
+
+slideshow:               "show.qml"
+slideshowAPI:            2

@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+# CODER-OS Post-Install Customization Runner
+# Executes inside the target chroot or freshly installed system
+
+set -e
+
+MANIFEST="/etc/coder-os/coder-manifest.json"
+
+echo "=========================================================="
+echo "   CODER-OS Post-Install Provisioning System             "
+echo "=========================================================="
+
+if [ ! -f "$MANIFEST" ]; then
+    echo "[!] Manifest not found at $MANIFEST. Skipping custom package install."
+    exit 0
+fi
+
+echo "[✓] Reading selected components from $MANIFEST..."
+
+# Extract selections using python
+DESKTOP=$(python -c "import json; m=json.load(open('$MANIFEST')); print(m.get('desktop', ''))")
+SHELL_CHOICE=$(python -c "import json; m=json.load(open('$MANIFEST')); print(m.get('shell', 'zsh'))")
+USERNAME=$(python -c "import json; m=json.load(open('$MANIFEST')); print(m.get('username', 'coder'))")
+PACKAGES=$(python -c "import json; m=json.load(open('$MANIFEST')); print(' '.join(m.get('selected_packages', [])))")
+
+echo "[✓] Target user: $USERNAME"
+echo "[✓] Target shell: $SHELL_CHOICE"
+echo "[✓] Target packages: $PACKAGES"
+
+# Map package IDs to pacman package names
+PACMAN_INSTALL_LIST=""
+
+for pkg in $PACKAGES; do
+    case "$pkg" in
+        "code")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST code"
+            ;;
+        "neovim")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST neovim"
+            ;;
+        "python")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST python python-pip python-virtualenv"
+            ;;
+        "nodejs")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST nodejs npm"
+            ;;
+        "rustup")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST rustup"
+            ;;
+        "go")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST go"
+            ;;
+        "gcc-clang")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST gcc clang cmake ninja gdb"
+            ;;
+        "docker")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST docker docker-compose"
+            ;;
+        "podman")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST podman podman-compose"
+            ;;
+        "firefox")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST firefox"
+            ;;
+        "telegram")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST telegram-desktop"
+            ;;
+        "vlc")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST vlc"
+            ;;
+        "libreoffice")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST libreoffice-fresh"
+            ;;
+        "cli-essentials")
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST ripgrep fzf bat eza btop fastfetch lazygit"
+            ;;
+        *)
+            # Directly pass name if it matches an Arch package
+            PACMAN_INSTALL_LIST="$PACMAN_INSTALL_LIST $pkg"
+            ;;
+    esac
+done
+
+if [ -n "$PACMAN_INSTALL_LIST" ]; then
+    echo "[✓] Installing selected packages: $PACMAN_INSTALL_LIST"
+    pacman -Sy --noconfirm --needed $PACMAN_INSTALL_LIST || echo "[!] Some packages could not be installed immediately, skipping."
+fi
+
+# Enable Docker if requested
+if [[ "$PACKAGES" == *"docker"* ]]; then
+    echo "[✓] Enabling Docker service and adding $USERNAME to docker group..."
+    systemctl enable docker.service || true
+    usermod -aG docker "$USERNAME" || true
+fi
+
+# Configure default shell for user
+if [ -n "$USERNAME" ] && id "$USERNAME" &>/dev/null; then
+    if [ "$SHELL_CHOICE" = "zsh" ] && command -v zsh &>/dev/null; then
+        chsh -s $(which zsh) "$USERNAME" || true
+    elif [ "$SHELL_CHOICE" = "fish" ] && command -v fish &>/dev/null; then
+        chsh -s $(which fish) "$USERNAME" || true
+    fi
+fi
+
+# Setup Rust toolchain if rustup was selected
+if [[ "$PACKAGES" == *"rustup"* ]] && command -v rustup &>/dev/null; then
+    echo "[✓] Initializing stable Rust toolchain..."
+    su - "$USERNAME" -c "rustup default stable" || true
+fi
+
+# Enable Bluetooth and NetworkManager by default
+systemctl enable NetworkManager.service || true
+systemctl enable bluetooth.service || true
+
+echo "=========================================================="
+echo "   CODER-OS Provisioning Completed Successfully!         "
+echo "=========================================================="

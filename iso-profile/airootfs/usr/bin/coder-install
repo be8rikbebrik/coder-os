@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# CODER-OS Installer Trigger
+
+set -e
+
+MANIFEST="/etc/coder-os/coder-manifest.json"
+
+echo "============================================="
+echo "   CODER-OS System Installer Initiator       "
+echo "============================================="
+
+if [ -f "$MANIFEST" ]; then
+    echo "[✓] Found configuration manifest: $MANIFEST"
+else
+    echo "[i] No manifest found. Launching wizard first..."
+    coder-setup
+fi
+
+if command -v calamares &> /dev/null; then
+    echo "[✓] Launching Calamares GUI Installer..."
+    pkexec calamares "$@"
+else
+    echo "[!] Calamares not installed in this environment."
+    echo "[i] You can run manual arch-install or coder-postinstall."
+fi

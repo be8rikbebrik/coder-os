@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# CODER-OS Setup Wizard Launcher
+
+set -e
+
+SCRIPT_DIR="/usr/share/coder-os/coder-wizard"
+
+if [ -f "$SCRIPT_DIR/main.py" ]; then
+    python "$SCRIPT_DIR/main.py" "$@"
+else
+    # Fallback to local dev path if run from source
+    LOCAL_SCRIPT="$(dirname "$(readlink -f "$0")")/../share/coder-os/coder-wizard/main.py"
+    if [ -f "$LOCAL_SCRIPT" ]; then
+        python "$LOCAL_SCRIPT" "$@"
+    else
+        echo "Error: coder-wizard not found!"
+        exit 1
+    fi
+fi

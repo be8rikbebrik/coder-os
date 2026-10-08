@@ -1,0 +1,77 @@
+name: Build CODER-OS ISO
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build CODER-OS ArchISO
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo docker image prune --all --force
+
+      - name: Build ISO using Arch Linux Docker Container
+        run: |
+          sudo docker run --privileged \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            archlinux:latest \
+            bash -c "pacman -Syu --noconfirm archiso && bash ./scripts/build-iso.sh"
+
+      - name: Compute SHA256 Checksum
+        run: |
+          cd out
+          sha256sum *.iso > sha256sum.txt
+          cat sha256sum.txt
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coder-os-iso
+          path: |
+            out/*.iso
+            out/sha256sum.txt
+          retention-days: 14
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name || 'v1.0.0-alpha' }}
+          name: "CODER-OS Release ${{ github.ref_name || 'v1.0.0-alpha' }}"
+          draft: false
+          prerelease: false
+          files: |
+            out/*.iso
+            out/sha256sum.txt
+          body: |
+            ## 🚀 CODER-OS 1.0 (Rolling Release)
+            Операционная система для разработчиков и вайб-кодеров на базе Arch Linux.
+            
+            ### ✨ Особенности:
+            - **Интерактивный опросник перед установкой** (Хардкорный кодер / Вайб-кодер / Линуксоид из коробки)
+            - **Предустановленный Hyprland Coder Rice** с Waybar, Kitty, Dunst и красивыми анимациями
+            - **Сверхбыстрый стек**: Neovim (LazyVim), VS Code, Python + uv, Node.js + Bun, Rustup, Go, Docker, Ollama
+            - **Готовность к ноутбукам**: поддержка Wi-Fi, Bluetooth, жестов тачпада, регулировки яркости и звука из коробки
+            
+            ### 📥 Как записать на флешку:
+            1. Скачайте `.iso` образ.
+            2. Запишите через **Ventoy**, **Rufus** (в режиме DD) или **BalenaEtcher**.
+            3. Вставьте флешку в ноутбук и загрузитесь в режиме UEFI!
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

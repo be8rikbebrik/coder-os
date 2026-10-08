@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=CODER-OS Setup Wizard
+Comment=Интерактивная настройка и установка CODER-OS
+Exec=coder-setup
+Icon=utilities-terminal
+Terminal=false
+Categories=System;Settings;
+StartupNotify=true

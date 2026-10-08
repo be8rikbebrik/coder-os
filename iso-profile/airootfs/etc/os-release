@@ -1,0 +1,10 @@
+NAME="CODER-OS"
+PRETTY_NAME="CODER-OS Linux 1.0 (Rolling Release)"
+ID=coderos
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="0;36"
+HOME_URL="https://github.com/coder-os"
+SUPPORT_URL="https://github.com/coder-os/issues"
+BUG_REPORT_URL="https://github.com/coder-os/issues"
+LOGO=coder-os

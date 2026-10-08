@@ -1,0 +1,66 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 38,
+    "spacing": 8,
+    "modules-left": ["custom/logo", "hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["cpu", "memory", "battery", "wireplumber", "network", "custom/install"],
+
+    "custom/logo": {
+        "format": " 🚀 CODER-OS ",
+        "tooltip": false,
+        "on-click": "coder-setup"
+    },
+
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate"
+    },
+
+    "hyprland/window": {
+        "max-length": 35,
+        "separate-outputs": true
+    },
+
+    "clock": {
+        "format": "⏱ {:%H:%M  •  %d %b %Y}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 2
+    },
+
+    "memory": {
+        "format": " {}%",
+        "interval": 2
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    },
+
+    "wireplumber": {
+        "format": " {volume}%",
+        "format-muted": " Muted"
+    },
+
+    "network": {
+        "format-wifi": " {essid}",
+        "format-ethernet": "󰈀 Wired",
+        "format-disconnected": "󰖪 Off"
+    },
+
+    "custom/install": {
+        "format": " ⚡ УСТАНОВИТЬ ",
+        "tooltip": "Запустить мастер установки CODER-OS",
+        "on-click": "coder-setup"
+    }
+}
