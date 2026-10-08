@@ -12,6 +12,9 @@ amd-ucode
 base
 base-devel
 arch-install-scripts
+mkinitcpio-archiso
+mkinitcpio-nfs-utils
+pv
 efibootmgr
 grub
 os-prober
